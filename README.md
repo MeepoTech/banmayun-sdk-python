@@ -8,3 +8,8 @@
 ## Requirements
 
 目前仅依赖urllib3，请使用最新版本。
+
+
+## Installation
+
+    python setup.py install
