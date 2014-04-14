@@ -11,17 +11,20 @@ class BaseSession(object):
 
     def __init__(self, locale=None, time_zone=None, rest_client=rest.RESTClient):
         self.api_host = "api.banmayun.com"
-        self.token = None
+        self.link = None
         self.locale = locale
         self.time_zone = time_zone
         self.rest_client = rest_client
 
+    def get_link(self):
+        return self.link
+
     def is_linked(self):
-        return bool(self.token)
+        return bool(self.link)
 
     def unlink(self):
         # TODO: logout
-        self.token = None
+        self.link = None
 
     def build_path(self, target, params=None):
         target_path = urllib.parse.quote(target)
@@ -44,10 +47,10 @@ class BaseSession(object):
 
 
 class BanmayunSession(BaseSession):
-    def set_token(self, token):
-        self.token = token
+    def set_link(self, link):
+        self.link = link
 
-    def obtain_token(self, username, password, link_name, link_device):
+    def obtain_link(self, username, password, link_name, link_device):
         url = self.build_url(self.api_host, '/auth/sign_in')
         params = {'username': username,
                   'password': password,
@@ -56,8 +59,8 @@ class BanmayunSession(BaseSession):
         headers, params = self.build_access_headers(url, params=params)
 
         response = self.rest_client.POST(url, headers=headers, params=params, raw_response=True)
-        self.token = self._parse_token(response.read())
-        return self.token
+        self.link = json.loads(response.read())
+        return self.link
 
     def build_access_headers(self, resource_url, params=None):
         if params is None:
@@ -65,22 +68,7 @@ class BanmayunSession(BaseSession):
         else:
             params = params.copy()
 
-        if self.token:
-            params.update({'token', self.token})
+        if self.link:
+            params.update({'token', self.link["token"]})
 
         return {}, params
-
-    @classmethod
-    def _parse_token(cls, s):
-        if not s:
-            raise ValueError("Invalid parameter string.")
-
-        params = json.loads(s)
-        if not params:
-            raise ValueError(u"Invalid parameter string: %r" % s)
-
-        token = params.get("token", None)
-        if token is None:
-            raise ValueError("'token' not found in response")
-        else:
-            return token
