@@ -51,15 +51,15 @@ class BaseSession(object):
 
 class BanmayunSession(BaseSession):
     def obtain_link(self, username, password, link_name, link_device):
-        url = self.build_url(self.api_host, '/auth/sign_in')
+        url = self.build_url('/auth/sign_in')
         params = {'username': username,
                   'password': password,
                   'link_name': link_name,
                   'link_device': link_device}
         headers, params = self.build_access_headers(url, params=params)
+        url = self.build_url('/auth/sign_in', params=params)
 
-        response = self.rest_client.POST(url, headers=headers, params=params, raw_response=True)
-        self.link = json.loads(response.read())
+        self.link = self.rest_client.POST(url, headers=headers)
         return self.link
 
     def build_access_headers(self, resource_url, params=None):
@@ -69,6 +69,6 @@ class BanmayunSession(BaseSession):
             params = params.copy()
 
         if self.link:
-            params.update({'token', self.link["token"]})
+            params['token'] = self.link["token"]
 
         return {}, params
