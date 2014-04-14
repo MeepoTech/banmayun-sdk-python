@@ -7,7 +7,7 @@
 
 ## Requirements
 
-目前仅依赖urllib3，请使用最新版本。
+目前仅依赖[urllib3](https://pypi.python.org/pypi/urllib3)，请使用最新版本。
 
 
 ## Installation
