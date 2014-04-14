@@ -38,6 +38,9 @@ class BanmayunClient(object):
         url = self.session.build_url(target, params)
         return url, params, headers
 
+    def get_current_user_id(self):
+        return self.session.link["user_id"]
+
     def get_link(self, user_id, link_id):
         path = "/users/%s/links/%s" % (user_id, link_id)
 
