@@ -20,10 +20,9 @@ def format_path(path):
 
 
 class BanmayunClient(object):
-    def __init__(self, link, locale=None, time_zone=None, rest_client=RESTClient):
-        self.session = BanmayunSession(locale=locale, time_zone=time_zone, rest_client=rest_client)
-        self.session.set_link(link)
-        self.rest_client = rest_client
+    def __init__(self, session):
+        self.session = session
+        self.rest_client = session.rest_client
 
     def get_session(self):
         return self.session

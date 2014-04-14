@@ -16,6 +16,9 @@ class BaseSession(object):
         self.time_zone = time_zone
         self.rest_client = rest_client
 
+    def set_link(self, link):
+        self.link = link
+
     def get_link(self):
         return self.link
 
@@ -47,9 +50,6 @@ class BaseSession(object):
 
 
 class BanmayunSession(BaseSession):
-    def set_link(self, link):
-        self.link = link
-
     def obtain_link(self, username, password, link_name, link_device):
         url = self.build_url(self.api_host, '/auth/sign_in')
         params = {'username': username,
