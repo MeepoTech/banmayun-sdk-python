@@ -3,8 +3,7 @@ from __future__ import absolute_import
 import json
 import re
 
-from .rest import ErrorResponse, RESTClient
-from .session import BanmayunSession
+from .rest import ErrorResponse
 
 
 def format_path(path):
@@ -314,10 +313,9 @@ class BanmayunClient(object):
         url, params, headers = self.request(path, params=params)
         return self.rest_client.POST(url, headers=headers)
 
-    def put_file_by_path(self, root_id, full_path, file_obj, client_mtime, overwrite=False):
+    def put_file_by_path(self, root_id, full_path, file_obj, modified_at_millis, overwrite=False):
         path = "/roots/%s/files/p/%s" % (root_id, format_path(full_path))
-        # TODO: rfc1123
-        params = {'client_mtime': client_mtime,
+        params = {'modified_at_millis': modified_at_millis,
                   'overwrite': overwrite}
 
         url, params, headers = self.request(path, params=params)
@@ -343,10 +341,9 @@ class BanmayunClient(object):
         url, params, headers = self.request(path)
         return self.rest_client.DELETE(url, headers=headers)
 
-    def upload_file(self, root_id, meta_id, file_obj, client_mtime):
+    def upload_file(self, root_id, meta_id, file_obj, modified_at_millis):
         path = "/roots/%s/files/%s" % (root_id, meta_id)
-        # TODO: rfc1123
-        params = {'client_mtime': client_mtime}
+        params = {'modified_at_millis': modified_at_millis}
 
         url, params, headers = self.request(path, params=params)
         return self.rest_client.POST(url, headers=headers, body=file_obj)
@@ -464,10 +461,16 @@ class BanmayunClient(object):
         url, params, headers = self.request(path)
         return self.rest_client.DELETE(url, headers=headers)
 
-    def create_share(self, root_id, meta_id, share):
+    def create_share(self, root_id, meta_id, share, password=None, expires_at_millis=None):
         path = "/roots/%s/files/%s/shares" % (root_id, meta_id)
 
-        url, params, headers = self.request(path)
+        params = {}
+        if password is not None:
+            params['password'] = password
+        if expires_at_millis is not None:
+            params['expires_at_millis'] = expires_at_millis
+
+        url, params, headers = self.request(path, params=params)
         headers['content-type'] = 'application/json'
         return self.rest_client.POST(url, headers=headers, body=json.dumps(share))
 
@@ -537,13 +540,12 @@ class BanmayunClient(object):
         url, params, headers = self.request(path)
         return self.rest_client.DELETE(url, headers=headers)
 
-    def commit_chunked_upload(self, root_id, full_path, upload_id, client_mtime):
+    def commit_chunked_upload(self, root_id, full_path, upload_id, modified_at_millis):
         path = "/fileops/commit_chunked_upload"
-        # TODO: rfc1123
         params = {'root_id': root_id,
                   'path': format_path(full_path),
                   'upload_id': upload_id,
-                  'client_mtime': client_mtime}
+                  'modified_at_millis': modified_at_millis}
 
         url, params, headers = self.request(path, params=params)
         return self.rest_client.POST(url, headers=headers)
@@ -566,14 +568,13 @@ class BanmayunClient(object):
         url, params, headers = self.request(path, params=params)
         return self.rest_client.POST(url, headers=headers)
 
-    def create_folder(self, root_id, full_path, client_mtime=None):
+    def create_folder(self, root_id, full_path, modified_at_millis=None):
         path = "/fileops/create_folder"
         params = {'root_id': root_id,
                   'path': format_path(full_path)}
 
-        # TODO: rfc1123
-        if client_mtime is not None:
-            params['client_mtime'] = client_mtime
+        if modified_at_millis is not None:
+            params['modified_at_millis'] = modified_at_millis
 
         url, params, headers = self.request(path, params=params)
         return self.rest_client.POST(url, headers=headers)
@@ -604,24 +605,22 @@ class BanmayunClient(object):
         url, params, headers = self.request(path, params=params)
         return self.rest_client.POST(url, headers=headers)
 
-    def thunder_upload(self, root_id, full_path, md5, bytes_, client_mtime):
+    def thunder_upload(self, root_id, full_path, md5, bytes_, modified_at_millis):
         path = "/fileops/thunder_upload"
-        # TODO: rfc1123
         params = {'root_id': root_id,
                   'path': format_path(full_path),
                   'md5': md5,
                   'bytes': bytes_,
-                  'client_mtime': client_mtime}
+                  'modified_at_millis': modified_at_millis}
 
         url, params, headers = self.request(path, params=params)
         return self.rest_client.POST(url, headers=headers)
 
-    def utime_folder(self, root_id, full_path, client_mtime):
+    def utime_folder(self, root_id, full_path, modified_at_millis):
         path = "/fileops/utime_folder"
-        # TODO: rfc1123
         params = {'root_id': root_id,
                   'path': format_path(full_path),
-                  'client_mtime': client_mtime}
+                  'modified_at_millis': modified_at_millis}
 
         url, params, headers = self.request(path, params=params)
         return self.rest_client.POST(url, headers=headers)
