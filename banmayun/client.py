@@ -649,13 +649,7 @@ class BanmayunClient(object):
             params['offset'] = offset
 
         url, ignored_params, headers = self.request("/chunked_upload", params=params)
-
-        # TODO:
-        try:
-            reply = self.rest_client.POST(url, headers=headers, body=file_obj)
-            return reply['offset'], reply['upload_id']
-        except ErrorResponse as e:
-            raise e
+        return self.rest_client.POST(url, headers=headers, body=file_obj)
 
     def delta(self, root_id, cursor_id=None):
         path = "/delta"

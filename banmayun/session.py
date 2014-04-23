@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 
-import json
 import urllib.parse
 
 from . import rest
@@ -9,12 +8,12 @@ from . import rest
 class BaseSession(object):
     API_VERSION = 1
 
-    def __init__(self, locale=None, time_zone=None, rest_client=rest.RESTClient):
-        self.api_host = "api.banmayun.com"
-        self.link = None
+    def __init__(self, api_host="api.banmayun.com", locale=None, time_zone=None, rest_client=rest.RESTClient):
+        self.api_host = api_host
         self.locale = locale
         self.time_zone = time_zone
         self.rest_client = rest_client
+        self.link = None
 
     def set_link(self, link):
         self.link = link
